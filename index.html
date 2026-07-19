@@ -1,0 +1,205 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#E3FDFD">
+  <title>MadeForCaca💕</title>
+  <meta name="description" content="Sebuah kado ulang tahun kecil untuk Caca.">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="intro-locked">
+  <div class="opening-experience" id="openingExperience" aria-live="polite">
+    <section class="opening-screen loading-screen active" id="loadingScreen" aria-label="Menyiapkan kejutan">
+      <div class="opening-glow" aria-hidden="true"></div>
+      <div class="loading-hearts" aria-hidden="true">
+        <span><i class="fas fa-heart"></i></span><span><i class="fas fa-heart"></i></span><span><i class="fas fa-heart"></i></span>
+      </div>
+      <h1>bentar yaaa<br><em>sayang...</em></h1>
+      <p class="loading-message" id="loadingMessage"></p>
+      <div class="love-loader" role="progressbar" aria-label="Memuat kejutan" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <i id="loadingProgress"></i>
+      </div>
+      <small id="loadingPercent">0%</small>
+    </section>
+
+    <section class="opening-screen pin-screen" id="pinScreen" aria-label="Masukkan PIN kenangan" aria-hidden="true">
+      <div class="pin-card">
+        <div class="pin-seal" aria-hidden="true"><span><i class="fas fa-heart"></i></span></div>
+        <h2>cobaa masukin<br><em>kisah kita dimulai..</em></h2>
+        <p class="pin-hint">Cluenya Tanggal dan bulan pertama kali kita chattan..</p>
+        <div class="pin-dots" id="pinDots" aria-label="PIN 4 angka">
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <p class="pin-feedback" id="pinFeedback" role="status">Format: DDMM</p>
+        <div class="pin-keypad" id="pinKeypad" aria-label="Papan angka">
+          <button type="button" data-pin="1">1</button><button type="button" data-pin="2">2</button><button type="button" data-pin="3">3</button>
+          <button type="button" data-pin="4">4</button><button type="button" data-pin="5">5</button><button type="button" data-pin="6">6</button>
+          <button type="button" data-pin="7">7</button><button type="button" data-pin="8">8</button><button type="button" data-pin="9">9</button>
+          <button type="button" class="pin-empty" tabindex="-1" aria-hidden="true"></button><button type="button" data-pin="0">0</button><button type="button" class="pin-delete" id="pinDelete" aria-label="Hapus angka"><i class="fas fa-delete-left"></i></button>
+        </div>
+        <small>empat angka yang hanya kita berdua tahu <i class="fas fa-heart"></i></small>
+      </div>
+    </section>
+  </div>
+  <!-- Letakkan file musik.mp3 di folder yang sama dengan index.html -->
+  <audio id="backgroundMusic" autoplay loop preload="auto">
+    <source src="musik.mp3" type="audio/mpeg">
+  </audio>
+  <main class="app scene-gift music-locked" id="app" aria-hidden="true">
+    <div class="grain"></div><div class="ambient one"></div><div class="ambient two"></div><div class="stars"></div>
+    <header>
+        <button class="logo" id="homeBtn"><i class="fas fa-heart"></i> <b>CACA</b></button>
+        <button class="sound" id="soundBtn"><span><i class="fas fa-music"></i></span> musik</button>
+    </header>
+    <button id="restartBtn" style="display:none"></button>
+    <div class="love-background" aria-hidden="true">
+      <span style="--x:6%;--size:18px;--duration:12s;--delay:-2s;--drift:45px"><i class="fas fa-heart"></i></span>
+      <span style="--x:14%;--size:10px;--duration:9s;--delay:-7s;--drift:-30px"><i class="fas fa-heart"></i></span>
+      <span style="--x:23%;--size:24px;--duration:15s;--delay:-5s;--drift:55px"><i class="fas fa-heart"></i></span>
+      <span style="--x:31%;--size:13px;--duration:11s;--delay:-9s;--drift:-42px"><i class="fas fa-heart"></i></span>
+      <span style="--x:40%;--size:9px;--duration:8s;--delay:-3s;--drift:28px"><i class="fas fa-heart"></i></span>
+      <span style="--x:49%;--size:20px;--duration:14s;--delay:-11s;--drift:-48px"><i class="fas fa-heart"></i></span>
+      <span style="--x:58%;--size:12px;--duration:10s;--delay:-5s;--drift:35px"><i class="fas fa-heart"></i></span>
+      <span style="--x:66%;--size:27px;--duration:16s;--delay:-8s;--drift:-60px"><i class="fas fa-heart"></i></span>
+      <span style="--x:74%;--size:11px;--duration:9s;--delay:-1s;--drift:26px"><i class="fas fa-heart"></i></span>
+      <span style="--x:82%;--size:19px;--duration:13s;--delay:-10s;--drift:-38px"><i class="fas fa-heart"></i></span>
+      <span style="--x:91%;--size:14px;--duration:11s;--delay:-6s;--drift:42px"><i class="fas fa-heart"></i></span>
+      <span style="--x:96%;--size:8px;--duration:8s;--delay:-4s;--drift:-20px"><i class="fas fa-heart"></i></span>
+    </div>
+
+    <section class="panel gift active" id="giftScene">
+      <div class="music-gate" id="musicGate">
+        <span class="music-orbit"><i class="fas fa-heart"></i></span>
+        <h1><em>coba kamu klik ini sayang..</em></h1>
+        <p class="intro">pasti suasana bikin terasa spesial bangettt <i class="fas fa-heart"></i></p>
+        <button class="start-music" id="startMusicBtn"><span><i class="fas fa-heart"></i></span>KLIK INIII</button>
+        <small>percaya sama aku, yaaaa</small>
+      </div>
+      <div class="music-player-loading" id="musicPlayerLoading" aria-hidden="true">
+        <div class="music-player-card">
+          <p class="eyebrow">NOW PLAYING  &middot;  SHAPE OF MY HEART</p>
+          <div class="music-record" aria-hidden="true"><span><i class="fas fa-heart"></i></span><i></i></div>
+          <div class="music-player-copy">
+            <h2>lagu ini yang bikin aku<br><em>selalu inget kamu.</em></h2>
+          </div>
+          <div class="music-equalizer" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+          <div class="music-timeline" role="progressbar" aria-label="Menyiapkan kejutan berikutnya" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="musicLoadingProgress"></i></div>
+          <div class="music-timing"><span id="musicLoadingTime">0:00</span><small id="musicLoadingStatus">memutar kenangan kita...</small><span>0:05</span></div>
+        </div>
+      </div>
+      <div class="gift-content waiting" id="giftContent">
+        <p class="eyebrow">20 JULY  &middot;  YOUR SPECIAL DAYYY</p>
+        <h1>ada sesuatu buat kamuu,<br><em>Sayang...</em></h1>
+        <button class="gift-button" id="giftBtn" aria-label="Buka kado">
+          <span class="spark s1"><i class="fas fa-star"></i></span><span class="spark s2"> &middot; </span><span class="spark s3"><i class="fas fa-heart"></i></span>
+          <span class="gift-glow"></span><span class="gift-lid"><i></i><b></b></span><span class="gift-box"><i></i></span>
+        </button>
+        <button class="open-hint" id="openHint">Klik SAYANGG <i><i class="fas fa-arrow-left"></i></i></button>
+      </div>
+    </section>
+
+    <section class="panel gallery" id="galleryScene">
+      <div class="section-title">
+        <button class="back" id="galleryHomeBtn"><i class="fas fa-arrow-left"></i> halaman awal</button>
+        <h2 class="gallery-typing-title" aria-label="Cewek lucu kaya kamu harus bahagia terus!!">
+          <span class="gallery-typing-text" id="galleryTypingText" aria-hidden="true"></span>
+        </h2>
+      </div>
+      <div class="time-together gallery-time">
+        <div class="time-heading">
+          <span><i class="fas fa-heart"></i></span>
+          <div><small>KITA UDAH BARENG BARENG</small><p>Sejak 27 Februari 2025</p></div>
+        </div>
+        <div class="time-grid" aria-label="Durasi waktu bersama">
+          <div><b id="yearsTogether">0</b><span>tahun</span></div>
+          <div><b id="monthsTogether">0</b><span>bulan</span></div>
+          <div><b id="daysTogether">0</b><span>hari</span></div>
+          <div><b id="hoursTogether">0</b><span>jam</span></div>
+          <div><b id="minutesTogether">0</b><span>menit</span></div>
+          <div><b id="secondsTogether">0</b><span>detik</span></div>
+        </div>
+      </div>
+      <div class="memories-grid" id="memoryGallery" aria-label="Semua foto kenangan kita"></div>
+      <div class="gallery-ending" id="galleryEnding">
+        <div class="ending-heart"><span><i class="fas fa-heart"></i></span><i><i class="fas fa-star"></i></i></div>
+        <h2 id="galleryEndingTitle">Buka suratnya<br>sekarang <em>yuk?</em></h2>
+        <p id="galleryEndingText">Beberapa kenangan menunggumu untuk dibaca.</p>
+        <div class="ending-actions">
+          <button class="primary" id="openLetterAfterGallery">Buka suratnya <span><i class="fas fa-heart"></i></span></button>
+        </div>
+      </div>
+    </section>
+
+    <dialog class="memory-lightbox" id="memoryLightbox" aria-labelledby="lightboxTitle">
+      <button class="lightbox-close" id="closeMemoryLightbox" type="button" aria-label="Tutup foto"><i class="fas fa-times"></i></button>
+      <figure>
+        <img id="lightboxImage" src="" alt="">
+        <figcaption>
+          <small id="lightboxDate"></small>
+          <h3 id="lightboxTitle"></h3>
+        </figcaption>
+      </figure>
+    </dialog>
+
+    <section class="panel letter" id="letterScene">
+      <button class="back" data-go="gallery"><i class="fas fa-arrow-left"></i> kembali ke galeri</button>
+      <div class="letter-scene-intro">
+        <p class="eyebrow">SEBUAH SURAT KECIL</p>
+        <h2>buat pacar aku<br><em>yang cantikk</em></h2>
+      </div>
+      <div class="letter-keepsakes" aria-hidden="true">
+        <span class="keepsake-date"><small>OUR DAY</small><b>27  &middot;  02</b><i><i class="fas fa-heart"></i></i></span>
+        <span class="keepsake-note">dibaca pelan-pelan<br>yaa sayangg <i class="fas fa-heart"></i></span>
+      </div>
+      <div class="envelope-wrap">
+        <div class="letter-sparkles" aria-hidden="true"><span><i class="fas fa-star"></i></span><span><i class="fas fa-heart"></i></span><span> &middot; </span><span><i class="fas fa-heart"></i></span></div>
+        <div class="envelope" id="envelope" role="button" tabindex="0" aria-label="Ketuk untuk membuka surat" aria-expanded="false">
+          <div class="env-back"></div>
+          <article class="paper">
+            <small>20 Juli 2026</small><h2>For u babe..,</h2>
+            <div id="letterBody"></div>
+            <p class="signature" id="signature">with all my love,<br><b>Dzakyy<i class="fas fa-heart"></i></b></p>
+          </article>
+          <div class="env-front"></div><div class="env-flap"></div>
+          <div class="postage-stamp" aria-hidden="true"><span><i class="fas fa-heart"></i></span><small>FOR CACA</small></div>
+          <div class="seal">C</div>
+        </div>
+        <div class="letter-action">
+          <p id="letterHint">Ketuk amplopnya untuk membuka surat <i class="fas fa-heart"></i></p>
+          <button class="primary letter-continue waiting" id="letterBtn">Baca selanjutnya <span><i class="fas fa-arrow-left"></i></span></button>
+          <div class="progress"><i id="letterProgress"></i></div>
+        </div>
+      </div>
+      <div class="letter-ending" id="letterEnding">
+        <div class="ending-heart"><span><i class="fas fa-heart"></i></span><i><i class="fas fa-star"></i></i></div>
+        <h2 id="letterEndingTitle">Lihat foto-foto kita<br>sekarang, <em>yuk?</em></h2>
+        <p id="letterEndingText">Suratnya sudah selesai, tapi masih ada beberapa kenangan yang ingin aku tunjukkan.</p>
+        <div class="ending-actions">
+          <button class="primary" id="continueAfterLetter">Buka galerinya <span><i class="fas fa-heart"></i></span></button>
+          <button class="ending-replay" id="rereadLetter">Baca suratnya lagi <i class="fas fa-arrow-left"></i></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel finale" id="finaleScene">
+      <div class="confetti" id="confetti"></div>
+      <div class="video-card" aria-labelledby="videoTitle">
+        <p class="eyebrow">VIDEO KITA</p>
+        <h2 id="videoTitle">kita selucu inii</h2>
+        <div class="video-player">
+          <video autoplay muted loop playsinline>
+            <source src="galeri/kita-selucu-inii.mp4" type="video/mp4">
+            Video ini tidak dapat diputar di browser ini.
+          </video>
+        </div>
+      </div>
+    </section>
+    <footer></footer>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
+

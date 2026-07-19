@@ -1,0 +1,763 @@
+﻿// ================================
+// PERSONALISASI CERITA DI SINI
+// ================================
+const memories = [
+  { src: "galeri/1.webp", orientation: "landscape", date: "#1", title: "", note: "Aku suka versi kita yang iniâ€”dekat, bahagia, dan tidak perlu menjadi siapa-siapa." },
+  { src: "galeri/2.webp", orientation: "portrait", date: "#2", title: "", note: "Kalau bersamamu, bahkan wajah paling iseng pun menjadi kenangan yang ingin kusimpan." },
+  { src: "galeri/3.webp", orientation: "portrait", date: "#3", title: "", note: "Caramu menatapku selalu berhasil membuat dunia di sekitar kita terasa lebih pelan." },
+  { src: "galeri/4.webp", orientation: "portrait", fit: "cover", focus: 0.46, date: "#4", title: "", note: "Satu jempol darimu cukup untuk mengingatkanku bahwa hal sederhana pun bisa terasa sangat manis." },
+  { src: "galeri/5.webp", orientation: "portrait", fit: "cover", focus: 0.5, date: "#5", title: "", note: "Foto ini terlalu lucu untuk hanya dilihat sekaliâ€”sama seperti tawamu yang selalu ingin kudengar lagi." },
+  { src: "galeri/6.webp", orientation: "landscape", date: "#6", title: "", note: "Di antara semua hal indah yang pernah kulihat, senyummu tetap menjadi salah satu favoritku." },
+  { src: "galeri/7.webp", orientation: "portrait", fit: "cover", focus: 0.5, date: "#7", title: "", note: "Ekspresi kecilmu selalu punya cara sendiri untuk membuat hariku lebih cerah." },
+  { src: "galeri/8.webp", orientation: "portrait", fit: "cover", focus: 0.48, date: "#8", title: "", note: "Senyum sederhana yang selalu ingin kulihat lebih lama." }
+];
+
+const letter = [
+  "selamat ulang tahun yang ke 21 tahunn sayang... 🤍🤍✨",
+  "semoga di usia yang baru inii, banyak hal hal yang baik yang akan datang yaa sayangg. semogaa kamuu diberii kesehatann, kebahagiaan, dan yang terpenting orang-orang yang selalu menghargai keberadaanmu yaaa!! 🤍",
+  "di umur kamuu yang sekarangg, aku juga berharap kamu selalu ingett kaloo kamu ituu dicintai,disayangii, kamu lebii darii cukup, dan kamu jugaa pantess dapett hal-hal yang baik sayang.. 💕💕",
+  "makasii jugaa sayangg sudaa samaa aku teruss, meskipunn banyak hal hal paitnya yang kita alamii, tapii aku bersyukurr bisa sama kamuu lagi jugaa sayangg 🤍",
+  "pokoknyaa sekarangg, enjoy your dayy!! ¥³, meskipun tahun ini kamu banyak sedihnyaa, tapii semoga kedepannya bisaa lebii banyak lagii hal hal yang bisa kamu bikin bahagiaa yaa sayangg.. POKOKNYAA HARUSS SENYUM TERUS, BAHAGIA TERUS, CERIA TERUSS, IM HERE FOR U SAYANG 🤍💕‹ "
+];
+
+let soundOn = true;
+let memoryIndex = 0;
+let letterStep = 0;
+let giftReady = false;
+let galleryCompleted = false;
+let letterCompleted = false;
+let memoryTransitionTimer = null;
+let memoryAnimationTimer = null;
+let memoryRenderToken = 0;
+let sceneTransitionTimer = null;
+let musicInterludeTimer = null;
+let galleryTypingTimer = null;
+let galleryTypingFinishTimer = null;
+const backgroundMusic = document.getElementById("backgroundMusic");
+backgroundMusic.volume = 0.45;
+
+// Pembuka romantis dan PIN tanggal pertama bertemu (27 Februari = 2702).
+const memoryPin = "2702";
+let enteredPin = "";
+let loadingValue = 0;
+let pageReady = document.readyState === "complete";
+
+function updateLoading(value) {
+  loadingValue = Math.min(100, Math.round(value));
+  document.getElementById("loadingProgress").style.width = `${loadingValue}%`;
+  document.getElementById("loadingPercent").textContent = `${loadingValue}%`;
+  document.querySelector(".love-loader").setAttribute("aria-valuenow", String(loadingValue));
+
+  const message = document.getElementById("loadingMessage");
+  if (loadingValue >= 78) message.textContent = "";
+  else if (loadingValue >= 42) message.textContent = "";
+}
+
+function showPinScreen() {
+  const loadingScreen = document.getElementById("loadingScreen");
+  const pinScreen = document.getElementById("pinScreen");
+  loadingScreen.classList.remove("active");
+  loadingScreen.setAttribute("aria-hidden", "true");
+  pinScreen.classList.add("active");
+  pinScreen.setAttribute("aria-hidden", "false");
+  setTimeout(() => document.querySelector('[data-pin="1"]').focus(), 650);
+}
+
+function beginRomanticLoading() {
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const loadingTimer = setInterval(() => {
+    const ceiling = pageReady ? 100 : 92;
+    const step = reducedMotion ? 24 : Math.max(1, (ceiling - loadingValue) * 0.09);
+    updateLoading(Math.min(ceiling, loadingValue + step));
+    if (loadingValue >= 100) {
+      clearInterval(loadingTimer);
+      setTimeout(showPinScreen, reducedMotion ? 120 : 480);
+    }
+  }, reducedMotion ? 45 : 90);
+
+  window.addEventListener("load", () => { pageReady = true; }, { once: true });
+  if (document.readyState === "complete") pageReady = true;
+}
+
+function renderPin() {
+  document.querySelectorAll("#pinDots span").forEach((dot, index) => {
+    dot.classList.toggle("filled", index < enteredPin.length);
+  });
+}
+
+function resetPin(message = "Coba ingat lagi, sayang ♡") {
+  const card = document.querySelector(".pin-card");
+  const feedback = document.getElementById("pinFeedback");
+  feedback.textContent = message;
+  feedback.classList.add("error");
+  card.classList.remove("shake");
+  void card.offsetWidth;
+  card.classList.add("shake");
+  setTimeout(() => {
+    enteredPin = "";
+    renderPin();
+    card.classList.remove("shake");
+  }, 520);
+}
+
+function unlockOpening() {
+  const opening = document.getElementById("openingExperience");
+  const card = document.querySelector(".pin-card");
+  const app = document.getElementById("app");
+  document.getElementById("pinFeedback").textContent = "Benar. Selamat datang di cerita kita ♡";
+  card.classList.add("unlocked");
+  setTimeout(() => {
+    document.body.classList.remove("intro-locked");
+    app.setAttribute("aria-hidden", "false");
+    app.classList.add("site-entering");
+    opening.classList.add("leaving");
+  }, 500);
+  setTimeout(() => app.classList.remove("site-entering"), 1500);
+  setTimeout(() => opening.remove(), 1350);
+}
+
+function submitPinDigit(digit) {
+  if (enteredPin.length >= memoryPin.length) return;
+  enteredPin += digit;
+  document.getElementById("pinFeedback").classList.remove("error");
+  renderPin();
+  if (enteredPin.length === memoryPin.length) {
+    setTimeout(() => enteredPin === memoryPin ? unlockOpening() : resetPin(), 220);
+  }
+}
+
+document.querySelectorAll("[data-pin]").forEach(button => {
+  button.addEventListener("click", () => submitPinDigit(button.dataset.pin));
+});
+
+document.getElementById("pinDelete").addEventListener("click", () => {
+  enteredPin = enteredPin.slice(0, -1);
+  document.getElementById("pinFeedback").textContent = "Format: DDMM";
+  document.getElementById("pinFeedback").classList.remove("error");
+  renderPin();
+});
+
+document.addEventListener("keydown", event => {
+  if (!document.getElementById("pinScreen")?.classList.contains("active")) return;
+  if (/^\d$/.test(event.key)) submitPinDigit(event.key);
+  if (event.key === "Backspace" || event.key === "Delete") {
+    enteredPin = enteredPin.slice(0, -1);
+    renderPin();
+  }
+});
+
+beginRomanticLoading();
+
+backgroundMusic.addEventListener("error", () => {
+  soundOn = false;
+  pauseMusic();
+  const soundBtn = document.getElementById("soundBtn");
+  if (soundBtn) {
+    soundBtn.innerHTML = "<span>×</span> musik";
+    soundBtn.setAttribute("aria-label", "Nyalakan musik");
+  }
+});
+
+// Browser mencoba autoplay saat halaman dibuka. Jika diblokir,
+// musik akan dimulai saat pengunjung menyentuh halaman untuk pertama kali.
+async function startMusic() {
+  if (!soundOn || !backgroundMusic.paused) return;
+  try {
+    await backgroundMusic.play();
+  } catch (_) {
+    // Autoplay diblokir; interaksi pertama akan mencoba lagi.
+  }
+}
+
+function pauseMusic() {
+  backgroundMusic.pause();
+}
+
+function showScene(name) {
+  const app = document.getElementById("app");
+  const incomingScene = document.getElementById(`${name}Scene`);
+  document.querySelectorAll(".panel").forEach(panel => panel.classList.remove("active", "scene-entering"));
+  app.className = `app scene-${name}`;
+  void incomingScene.offsetWidth;
+  incomingScene.classList.add("active", "scene-entering");
+  clearTimeout(sceneTransitionTimer);
+  sceneTransitionTimer = setTimeout(() => incomingScene.classList.remove("scene-entering"), 1100);
+  if (name === "letter" && document.querySelector(".envelope-wrap").classList.contains("letter-open") && !document.getElementById("letterScene").classList.contains("ending")) {
+    app.classList.add("letter-reading");
+  }
+  if (name === "gallery") {
+    hideGalleryEnding();
+    startGalleryTyping();
+    renderMemory();
+    updateGalleryEnding();
+  }
+  app.scrollTop = 0;
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+
+function startGalleryTyping() {
+  const message = "Cewek lucu kaya kamu harus bahagia terus!!";
+  const text = document.getElementById("galleryTypingText");
+  clearInterval(galleryTypingTimer);
+  clearTimeout(galleryTypingFinishTimer);
+  text.textContent = "";
+  text.classList.remove("complete");
+
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    text.textContent = message;
+    text.classList.add("complete");
+    return;
+  }
+
+  let characterIndex = 0;
+  galleryTypingTimer = setInterval(() => {
+    characterIndex += 1;
+    text.textContent = message.slice(0, characterIndex);
+    if (characterIndex === message.length) {
+      clearInterval(galleryTypingTimer);
+      galleryTypingFinishTimer = setTimeout(() => text.classList.add("complete"), 850);
+    }
+  }, 58);
+}
+
+function updateGalleryEnding() {
+  const title = document.getElementById("galleryEndingTitle");
+  const text = document.getElementById("galleryEndingText");
+  const button = document.getElementById("openLetterAfterGallery");
+  if (letterCompleted) {
+    title.innerHTML = "<br><em>Satu hal lagi..</em>";
+    text.textContent = "Kamu sudah melihat foto dan membaca semua kata yang kusimpan. Sekarang ada satu penutup kecil untukmu.";
+    button.innerHTML = "Lihat kejutan terakhir <span>✦</span>";
+  } else {
+    title.innerHTML = "Buka suratnya<br>sekarang, <em>yuk?</em>";
+    text.textContent = "Ada beberapa kata yang dari tadi menunggu untuk kamu baca.";
+    button.innerHTML = "Buka suratnya <span>♡</span>";
+  }
+}
+
+function hideGalleryEnding() {
+  document.getElementById("galleryScene").classList.remove("ending");
+}
+
+function showLetterEnding() {
+  letterCompleted = true;
+  document.getElementById("app").classList.remove("letter-reading");
+  const title = document.getElementById("letterEndingTitle");
+  const text = document.getElementById("letterEndingText");
+  const button = document.getElementById("continueAfterLetter");
+  if (galleryCompleted) {
+    title.innerHTML = "<br><em>Satu hal lagi..</em>";
+    text.textContent = "";
+    button.innerHTML = "Lihat Hal Terakhir <span>✦</span>";
+  } else {
+    title.innerHTML = "Lihat foto-foto kita<br>sekarang, <em>yuk?</em>";
+    text.textContent = "Suratnya sudah selesai, tapi masih ada beberapa kenangan yang ingin aku tunjukkan.";
+    button.innerHTML = "Buka galerinya <span>♡</span>";
+  }
+  document.getElementById("letterScene").classList.add("ending");
+  chime("soft");
+}
+
+function hideLetterEnding() {
+  document.getElementById("letterScene").classList.remove("ending");
+}
+
+function animateLetterEntrance() {
+  const envelopeWrap = document.querySelector(".envelope-wrap");
+  if (!envelopeWrap) return;
+  envelopeWrap.classList.remove("letter-animate-in");
+  void envelopeWrap.offsetWidth;
+  envelopeWrap.classList.add("letter-animate-in");
+  setTimeout(() => envelopeWrap.classList.remove("letter-animate-in"), 1400);
+}
+
+function showFinalSurprise() {
+  chime("soft");
+  showScene("finale");
+}
+
+function chime(type = "soft") {
+  if (!soundOn) return;
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContext) return;
+  const audio = new AudioContext();
+  const notes = type === "final" ? [392, 494, 587, 784] : [392, 523, 659];
+  notes.forEach((frequency, index) => {
+    const oscillator = audio.createOscillator();
+    const volume = audio.createGain();
+    oscillator.type = "sine";
+    oscillator.frequency.value = frequency;
+    volume.gain.setValueAtTime(0.045, audio.currentTime + index * 0.12);
+    volume.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + index * 0.12 + 0.5);
+    oscillator.connect(volume).connect(audio.destination);
+    oscillator.start(audio.currentTime + index * 0.12);
+    oscillator.stop(audio.currentTime + index * 0.12 + 0.55);
+  });
+  setTimeout(() => audio.close(), 1400);
+}
+
+function openGift() {
+  const gift = document.getElementById("giftBtn");
+  if (!gift || gift.classList.contains("opening")) return;
+  giftReady = true;
+  gift.classList.add("opening");
+  chime();
+  memoryIndex = 0;
+  setTimeout(() => showScene("gallery"), 950);
+}
+
+function renderMemory() {
+  const gallery = document.getElementById("memoryGallery");
+  const orderedMemories = memories
+    .map((item, originalIndex) => ({ item, originalIndex }))
+    .sort((first, second) => Number(first.item.orientation === "portrait") - Number(second.item.orientation === "portrait"));
+
+  gallery.innerHTML = orderedMemories.map(({ item, originalIndex }, index) => `
+    <article class="memory-item" style="--memory-delay:${index * 0.11}s">
+      <button class="polaroid memory-open ${item.orientation}" type="button" data-open-memory="${originalIndex}" aria-label="Buka foto: ${item.title}">
+        <div class="photo ${item.orientation}${item.fit === "cover" ? " fit-cover" : ""}" style="--photo-url:url('${item.src}')">
+          <img src="${item.src}" alt="${item.title} â€” foto kenangan berdua" loading="${index === 0 ? "eager" : "lazy"}" decoding="async" style="object-position:50% ${(item.focus ?? 0.5) * 100}%">
+        </div>
+        <div class="photo-caption"><span>${item.date}</span><b>${item.title}</b></div>
+      </button>
+    </article>
+  `).join("");
+  gallery.querySelectorAll("[data-open-memory]").forEach(button => {
+    button.addEventListener("click", () => openMemoryLightbox(Number(button.dataset.openMemory)));
+  });
+}
+
+function openMemoryLightbox(index) {
+  const item = memories[index];
+  const lightbox = document.getElementById("memoryLightbox");
+  const image = document.getElementById("lightboxImage");
+  image.src = item.src;
+  image.alt = `${item.title} â€” foto kenangan berdua`;
+  image.style.objectPosition = `50% ${(item.focus ?? 0.5) * 100}%`;
+  document.getElementById("lightboxDate").textContent = item.date;
+  document.getElementById("lightboxTitle").textContent = item.title;
+  lightbox.showModal();
+}
+
+function closeMemoryLightbox() {
+  const lightbox = document.getElementById("memoryLightbox");
+  if (lightbox.open) lightbox.close();
+}
+
+function readLetter() {
+  const envelope = document.getElementById("envelope");
+  const button = document.getElementById("letterBtn");
+  const hint = document.getElementById("letterHint");
+  if (letterStep === 0) {
+    animateLetterEntrance();
+    envelope.classList.add("opened");
+    document.querySelector(".envelope-wrap").classList.add("letter-open");
+    document.getElementById("app").classList.add("letter-reading");
+    hint.textContent = "Baca pelan-pelan, ya...";
+    button.classList.remove("waiting");
+    envelope.setAttribute("aria-expanded", "true");
+    envelope.setAttribute("tabindex", "-1");
+    chime();
+
+    letter.forEach(text => {
+      const paragraph = document.createElement("p");
+      paragraph.textContent = text;
+      document.getElementById("letterBody").appendChild(paragraph);
+    });
+    letterStep = letter.length;
+    document.getElementById("letterProgress").style.width = "100%";
+    button.innerHTML = "Lanjutkan <span>»’</span>";
+    document.getElementById("signature").classList.add("show");
+    return;
+  }
+  if (letterStep < letter.length) {
+    const paragraph = document.createElement("p");
+    paragraph.textContent = letter[letterStep];
+    document.getElementById("letterBody").appendChild(paragraph);
+    letterStep++;
+    document.getElementById("letterProgress").style.width = `${letterStep / letter.length * 100}%`;
+    button.innerHTML = letterStep < letter.length ? "Baca selanjutnya <span>»“</span>" : "Lanjutkan <span>»’</span>";
+    if (letterStep === letter.length) document.getElementById("signature").classList.add("show");
+  } else {
+    showLetterEnding();
+  }
+}
+
+function playMusicInterlude() {
+  const gate = document.getElementById("musicGate");
+  const player = document.getElementById("musicPlayerLoading");
+  const progress = document.getElementById("musicLoadingProgress");
+  const timeline = document.querySelector(".music-timeline");
+  const time = document.getElementById("musicLoadingTime");
+  const status = document.getElementById("musicLoadingStatus");
+  let value = 0;
+
+  gate.classList.add("leaving");
+  setTimeout(() => {
+    gate.style.display = "none";
+    player.setAttribute("aria-hidden", "false");
+    player.classList.add("active");
+
+    clearInterval(musicInterludeTimer);
+    musicInterludeTimer = setInterval(() => {
+      value = Math.min(100, value + 2);
+      progress.style.width = `${value}%`;
+      timeline.setAttribute("aria-valuenow", String(value));
+      time.textContent = `0:0${Math.min(5, Math.floor(value / 20))}`;
+      if (value >= 62) status.textContent = "sebentar lagi, sayang...";
+
+      if (value >= 100) {
+        clearInterval(musicInterludeTimer);
+        status.textContent = "kenangannya sudah siap ♡";
+        setTimeout(() => {
+          player.classList.add("leaving");
+          setTimeout(() => {
+            player.style.display = "none";
+            const content = document.getElementById("giftContent");
+            content.classList.remove("waiting");
+            content.classList.add("entering");
+          }, 620);
+        }, 650);
+      }
+    }, 90);
+  }, 500);
+}
+
+function makeConfetti() {
+  const holder = document.getElementById("confetti");
+  holder.innerHTML = Array.from({ length: 30 }, (_, index) => `<i style="left:${index * 37 % 100}%;animation-delay:-${index * 0.23}s;animation-duration:${4 + index % 5 * 0.5}s">${index % 3 ? "♥" : "✦"}</i>`).join("");
+}
+
+function floatingHeart(x, y, html = '<i class="fas fa-heart"></i>') {
+  const heart = document.createElement("i");
+  heart.className = "floating-heart";
+  heart.innerHTML = html;
+  heart.style.left = `${x}px`;
+  heart.style.top = `${y}px`;
+  document.body.appendChild(heart);
+  setTimeout(() => heart.remove(), 1300);
+}
+
+function drawRoundedRect(context, x, y, width, height, radius) {
+  context.beginPath();
+  context.moveTo(x + radius, y);
+  context.lineTo(x + width - radius, y);
+  context.quadraticCurveTo(x + width, y, x + width, y + radius);
+  context.lineTo(x + width, y + height - radius);
+  context.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+  context.lineTo(x + radius, y + height);
+  context.quadraticCurveTo(x, y + height, x, y + height - radius);
+  context.lineTo(x, y + radius);
+  context.quadraticCurveTo(x, y, x + radius, y);
+  context.closePath();
+}
+
+function drawWrappedText(context, text, x, y, maxWidth, lineHeight, maxLines = 4) {
+  const words = text.split(" ");
+  const lines = [];
+  let line = "";
+  words.forEach(word => {
+    const testLine = line ? `${line} ${word}` : word;
+    if (context.measureText(testLine).width > maxWidth && line) {
+      lines.push(line);
+      line = word;
+    } else {
+      line = testLine;
+    }
+  });
+  if (line) lines.push(line);
+  lines.slice(0, maxLines).forEach((item, index) => context.fillText(item, x, y + index * lineHeight));
+}
+
+function loadMemoryImage(source) {
+  return new Promise(resolve => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => resolve(null);
+    image.src = source;
+  });
+}
+
+async function saveMemoryCard(index = memoryIndex, triggerButton = null) {
+  const item = memories[index];
+  const palettes = [
+    ["#A6E3E9", "#1a3a4a"], ["#CBF1F5", "#71C9CE"],
+    ["#A6E3E9", "#1a3a4a"], ["#CBF1F5", "#1a3a4a"],
+    ["#E3FDFD", "#71C9CE"], ["#71C9CE", "#CBF1F5"],
+    ["#A6E3E9", "#1a3a4a"], ["#A6E3E9", "#1a3a4a"]
+  ];
+  const canvas = document.createElement("canvas");
+  canvas.width = 1080;
+  canvas.height = 1350;
+  const context = canvas.getContext("2d");
+
+  const background = context.createLinearGradient(0, 0, 1080, 1350);
+  background.addColorStop(0, "#E3FDFD");
+  background.addColorStop(1, "#CBF1F5");
+  context.fillStyle = background;
+  context.fillRect(0, 0, 1080, 1350);
+
+  context.fillStyle = "rgba(190,85,107,.10)";
+  context.beginPath(); context.arc(90, 140, 210, 0, Math.PI * 2); context.fill();
+  context.beginPath(); context.arc(1010, 1220, 260, 0, Math.PI * 2); context.fill();
+
+  context.save();
+  context.shadowColor = "rgba(77,28,44,.20)";
+  context.shadowBlur = 45;
+  context.shadowOffsetY = 20;
+  drawRoundedRect(context, 70, 65, 940, 1220, 30);
+  context.fillStyle = "#E3FDFD";
+  context.fill();
+  context.restore();
+
+  const photoGradient = context.createLinearGradient(105, 100, 975, 740);
+  photoGradient.addColorStop(0, palettes[index][0]);
+  photoGradient.addColorStop(1, palettes[index][1]);
+  drawRoundedRect(context, 105, 100, 870, 650, 18);
+  context.fillStyle = photoGradient;
+  context.fill();
+  const memoryPhoto = await loadMemoryImage(item.src);
+  if (memoryPhoto) {
+    const scale = item.fit === "cover"
+      ? Math.max(870 / memoryPhoto.width, 650 / memoryPhoto.height)
+      : Math.min(870 / memoryPhoto.width, 650 / memoryPhoto.height);
+    const width = memoryPhoto.width * scale;
+    const height = memoryPhoto.height * scale;
+    const focus = item.focus ?? 0.5;
+    context.save();
+    drawRoundedRect(context, 105, 100, 870, 650, 18);
+    context.clip();
+    context.drawImage(memoryPhoto, 105 + (870 - width) / 2, 100 + (650 - height) * focus, width, height);
+    context.restore();
+  } else {
+    context.fillStyle = "rgba(255,249,239,.9)";
+    context.textAlign = "center";
+    context.font = "140px Georgia";
+    context.fillText("♡", 540, 410);
+  }
+
+  context.textAlign = "left";
+  context.fillStyle = "#71C9CE";
+  context.font = "bold 17px Arial";
+  context.fillText(item.date.toUpperCase(), 115, 810);
+  context.fillStyle = "#1a3a4a";
+  context.font = "italic 48px Georgia";
+  drawWrappedText(context, item.title, 115, 880, 850, 58, 2);
+  context.fillStyle = "#A6E3E9";
+  context.font = "100px Georgia";
+  context.fillText("â€œ", 105, 1025);
+  context.fillStyle = "#1a3a4a";
+  context.font = "italic 31px Georgia";
+  drawWrappedText(context, item.note, 165, 1015, 735, 45, 3);
+
+  context.fillStyle = "#71C9CE";
+  context.font = "bold 15px Arial";
+  context.fillText(`KENANGAN ${String(index + 1).padStart(2, "0")}`, 115, 1215);
+  context.textAlign = "right";
+  context.font = "italic 24px Georgia";
+  context.fillText("Untuk Caca, dengan cinta ♡", 955, 1215);
+
+  const link = document.createElement("a");
+  link.download = `kenangan-caca-${String(index + 1).padStart(2, "0")}.png`;
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+
+  const button = triggerButton;
+  if (!button) return;
+  button.classList.add("saved");
+  button.innerHTML = "<span>✓“</span> Tersimpan";
+  setTimeout(() => {
+    button.classList.remove("saved");
+    button.innerHTML = "<span>»“</span> Simpan kenangan";
+  }, 1800);
+}
+
+const relationshipStart = new Date("2025-02-27T00:00:00");
+
+function calculateTimeTogether() {
+  const now = new Date();
+
+  // Jika tanggal sekarang masih sebelum tanggal mulai
+  if (now < relationshipStart) {
+    return;
+  }
+
+  // Hitung tahun dan bulan kalender
+  let years = now.getFullYear() - relationshipStart.getFullYear();
+  let months = now.getMonth() - relationshipStart.getMonth();
+
+  // Koreksi jika tanggal bulan ini belum mencapai tanggal 27
+  if (now.getDate() < relationshipStart.getDate()) {
+    months--;
+  }
+
+  // Koreksi jika bulan menjadi negatif
+  if (months < 0) {
+    years--;
+    months += 12;
+  }
+
+  // Tentukan tanggal terakhir setelah tahun + bulan penuh
+  const lastAnniversary = new Date(
+    relationshipStart.getFullYear() + years,
+    relationshipStart.getMonth() + years * 0 + months,
+    relationshipStart.getDate(),
+    relationshipStart.getHours(),
+    relationshipStart.getMinutes(),
+    relationshipStart.getSeconds()
+  );
+
+  // Cara lebih aman untuk menentukan tanggal acuan
+  const cursor = new Date(relationshipStart);
+  cursor.setFullYear(cursor.getFullYear() + years);
+  cursor.setMonth(cursor.getMonth() + months);
+
+  // Hitung sisa waktu
+  const difference = now.getTime() - cursor.getTime();
+
+  const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+  const hours = Math.floor(
+    (difference / (1000 * 60 * 60)) % 24
+  );
+  const minutes = Math.floor(
+    (difference / (1000 * 60)) % 60
+  );
+  const seconds = Math.floor(
+    (difference / 1000) % 60
+  );
+
+  // Tampilkan ke HTML
+  const yearsElement = document.getElementById("yearsTogether");
+  const monthsElement = document.getElementById("monthsTogether");
+  const daysElement = document.getElementById("daysTogether");
+  const hoursElement = document.getElementById("hoursTogether");
+  const minutesElement = document.getElementById("minutesTogether");
+  const secondsElement = document.getElementById("secondsTogether");
+
+  if (
+    !yearsElement ||
+    !monthsElement ||
+    !daysElement ||
+    !hoursElement ||
+    !minutesElement ||
+    !secondsElement
+  ) {
+    return;
+  }
+
+  yearsElement.textContent = years;
+  monthsElement.textContent = months;
+  daysElement.textContent = days;
+  hoursElement.textContent = String(hours).padStart(2, "0");
+  minutesElement.textContent = String(minutes).padStart(2, "0");
+  secondsElement.textContent = String(seconds).padStart(2, "0");
+}
+
+// Jalankan langsung
+calculateTimeTogether();
+
+// Update setiap 1 detik
+setInterval(calculateTimeTogether, 1000);
+
+document.getElementById("giftBtn").addEventListener("click", openGift);
+document.getElementById("giftBtn").addEventListener("pointerdown", openGift);
+document.getElementById("openHint").addEventListener("click", openGift);
+document.getElementById("openHint").addEventListener("pointerdown", openGift);
+document.getElementById("startMusicBtn").addEventListener("click", async () => {
+  document.getElementById("startMusicBtn").disabled = true;
+  soundOn = true;
+  await startMusic();
+  giftReady = true;
+  document.getElementById("app").classList.remove("music-locked");
+  const soundBtn = document.getElementById("soundBtn");
+  if (soundBtn) {
+    soundBtn.innerHTML = '<span><i class="fas fa-music"></i></span> musik';
+  }
+  playMusicInterlude();
+});
+const homeBtn = document.getElementById("homeBtn");
+if (homeBtn) {
+  homeBtn.addEventListener("click", () => {
+    if (giftReady) showScene("gallery");
+  });
+}
+document.getElementById("galleryHomeBtn").addEventListener("click", () => {
+  document.getElementById("restartBtn").click();
+});
+const memoryLightbox = document.getElementById("memoryLightbox");
+document.getElementById("closeMemoryLightbox").addEventListener("click", closeMemoryLightbox);
+memoryLightbox.addEventListener("click", event => {
+  if (event.target === memoryLightbox) closeMemoryLightbox();
+});
+const soundBtn = document.getElementById("soundBtn");
+if (soundBtn) {
+  soundBtn.addEventListener("click", event => {
+    soundOn = !soundOn;
+    event.currentTarget.innerHTML = `<span>${soundOn ? '<i class="fas fa-music"></i>' : '<i class="fas fa-times"></i>'}</span> musik`;
+    event.currentTarget.setAttribute("aria-label", soundOn ? "Matikan musik" : "Nyalakan musik");
+    if (soundOn) startMusic(); else pauseMusic();
+  });
+}
+document.querySelectorAll("[data-go]").forEach(button => button.addEventListener("click", () => {
+  chime();
+  showScene(button.dataset.go);
+}));
+document.getElementById("openLetterAfterGallery").addEventListener("click", () => {
+  galleryCompleted = true;
+  if (letterCompleted) {
+    showFinalSurprise();
+  } else {
+    chime("soft");
+    showScene("letter");
+  }
+});
+document.getElementById("continueAfterLetter").addEventListener("click", () => {
+  if (galleryCompleted) {
+    showFinalSurprise();
+  } else {
+    memoryIndex = 0;
+    hideGalleryEnding();
+    showScene("gallery");
+  }
+});
+document.getElementById("rereadLetter").addEventListener("click", () => {
+  hideLetterEnding();
+  document.getElementById("app").classList.add("letter-reading");
+});
+const envelope = document.getElementById("envelope");
+envelope.addEventListener("click", () => {
+  if (letterStep === 0) readLetter();
+});
+envelope.addEventListener("keydown", event => {
+  if (letterStep !== 0 || !["Enter", " "].includes(event.key)) return;
+  event.preventDefault();
+  readLetter();
+});
+document.getElementById("letterBtn").addEventListener("click", readLetter);
+document.getElementById("restartBtn").addEventListener("click", () => {
+  letterStep = 0;
+  memoryIndex = 0;
+  galleryCompleted = false;
+  letterCompleted = false;
+  document.getElementById("giftBtn").classList.remove("opening");
+  document.getElementById("envelope").classList.remove("opened");
+  document.querySelector(".envelope-wrap").classList.remove("letter-open");
+  document.querySelector(".envelope-wrap").classList.remove("letter-animate-in");
+  hideGalleryEnding();
+  hideLetterEnding();
+  document.getElementById("letterBody").innerHTML = "";
+  document.getElementById("signature").classList.remove("show");
+  document.getElementById("letterProgress").style.width = "0";
+  document.getElementById("letterBtn").classList.add("waiting");
+  document.getElementById("letterBtn").innerHTML = "Baca selanjutnya <span>»“</span>";
+  document.getElementById("letterHint").textContent = "Ketuk amplopnya untuk membuka surat <i class=\"fas fa-heart\"></i>";
+  document.getElementById("envelope").setAttribute("aria-expanded", "false");
+  document.getElementById("envelope").setAttribute("tabindex", "0");
+  showScene("gift");
+});
+document.getElementById("app").addEventListener("pointerdown", event => {
+  if (!event.target.closest("button")) floatingHeart(event.clientX, event.clientY, Math.random() > .5 ? '<i class="fas fa-heart"></i>' : '<i class="fas fa-star"></i>');
+});
+
+renderMemory();
+
