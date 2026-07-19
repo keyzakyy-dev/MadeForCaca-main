@@ -1,4 +1,4 @@
-﻿// ================================
+// ================================
 // PERSONALISASI CERITA DI SINI
 // ================================
 const memories = [
@@ -9,7 +9,9 @@ const memories = [
   { src: "galeri/5.webp", orientation: "portrait", fit: "cover", focus: 0.5, date: "#5", title: "", note: "Foto ini terlalu lucu untuk hanya dilihat sekaliâ€”sama seperti tawamu yang selalu ingin kudengar lagi." },
   { src: "galeri/6.webp", orientation: "landscape", date: "#6", title: "", note: "Di antara semua hal indah yang pernah kulihat, senyummu tetap menjadi salah satu favoritku." },
   { src: "galeri/7.webp", orientation: "portrait", fit: "cover", focus: 0.5, date: "#7", title: "", note: "Ekspresi kecilmu selalu punya cara sendiri untuk membuat hariku lebih cerah." },
-  { src: "galeri/8.webp", orientation: "portrait", fit: "cover", focus: 0.48, date: "#8", title: "", note: "Senyum sederhana yang selalu ingin kulihat lebih lama." }
+  { src: "galeri/8.webp", orientation: "portrait", fit: "cover", focus: 0.48, date: "#8", title: "", note: "Senyum sederhana yang selalu ingin kulihat lebih lama." },
+  { src: "galeri/9.webp", orientation: "landscape", date: "#9", title: "", note: "Masih banyak momen kita yang belum aku ceritakan, tapi setiap satunya selalu pantas untuk diingat." },
+  { src: "galeri/10.webp", orientation: "landscape", date: "#10", title: "", note: "Dan ini satu lagi kenangan, karena bersamamu rasanya selalu kurang untuk sekadar beberapa foto." }
 ];
 
 const letter = [
