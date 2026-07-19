@@ -757,6 +757,60 @@ document.getElementById("restartBtn").addEventListener("click", () => {
   document.getElementById("envelope").setAttribute("tabindex", "0");
   showScene("gift");
 });
+// ================================
+// FINAL VIDEO -> HAPPY BIRTHDAY MESSAGE
+// ================================
+function showBirthdayMessage() {
+  const videoCard = document.querySelector(".scene-finale .video-card");
+  const message = document.getElementById("birthdayMessage");
+  const text = document.getElementById("birthdayText");
+  const video = document.getElementById("birthdayVideo");
+  if (video) video.pause();
+
+  if (videoCard) videoCard.classList.add("hidden");
+  if (message) message.hidden = false;
+
+  const fullText = "Happy Birthday Sayangku <𝟑 .ᐟ";
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  text.textContent = "";
+  if (reducedMotion || !window.requestAnimationFrame) {
+    text.textContent = fullText;
+    return;
+  }
+
+  const cursor = document.createElement("span");
+  cursor.className = "typewriter-cursor";
+  text.appendChild(cursor);
+
+  let index = 0;
+  function typeNext() {
+    if (index < fullText.length) {
+      cursor.insertAdjacentText("beforebegin", fullText[index]);
+      index++;
+      setTimeout(typeNext, 90);
+    } else {
+      setTimeout(() => cursor.remove(), 1400);
+    }
+  }
+  typeNext();
+}
+
+const birthdayVideo = document.getElementById("birthdayVideo");
+if (birthdayVideo) {
+  birthdayVideo.addEventListener("ended", showBirthdayMessage);
+}
+
+// Finale sound button
+const finaleSoundBtn = document.getElementById("finaleSoundBtn");
+if (finaleSoundBtn) {
+  finaleSoundBtn.addEventListener("click", event => {
+    soundOn = !soundOn;
+    finaleSoundBtn.innerHTML = `<span>${soundOn ? '<i class="fas fa-music"></i>' : '<i class="fas fa-times"></i>'}</span> musik`;
+    finaleSoundBtn.setAttribute("aria-label", soundOn ? "Matikan musik" : "Nyalakan musik");
+    if (soundOn) startMusic(); else pauseMusic();
+  });
+}
+
 document.getElementById("app").addEventListener("pointerdown", event => {
   if (!event.target.closest("button")) floatingHeart(event.clientX, event.clientY, Math.random() > .5 ? '<i class="fas fa-heart"></i>' : '<i class="fas fa-star"></i>');
 });
