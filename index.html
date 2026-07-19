@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
@@ -190,12 +190,16 @@
         <p class="eyebrow">VIDEO KITA</p>
         <h2 id="videoTitle">kita selucu inii</h2>
         <div class="video-player">
-          <video autoplay muted loop playsinline>
+          <video id="birthdayVideo" autoplay muted playsinline>
             <source src="galeri/kita-selucu-inii.mp4" type="video/mp4">
             Video ini tidak dapat diputar di browser ini.
           </video>
         </div>
       </div>
+      <div class="birthday-message" id="birthdayMessage" aria-live="polite" hidden>
+        <h2 id="birthdayText"></h2>
+      </div>
+      <button class="sound finale-sound" id="finaleSoundBtn"><span><i class="fas fa-music"></i></span> musik</button>
     </section>
     <footer></footer>
   </main>
