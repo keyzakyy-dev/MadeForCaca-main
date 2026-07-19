@@ -770,7 +770,7 @@ function showBirthdayMessage() {
   if (videoCard) videoCard.classList.add("hidden");
   if (message) message.hidden = false;
 
-  const fullText = "Happy Birthday Sayangku <𝟑 .ᐟ";
+  const fullText = "Happy Birthday Sayangku <3.ᐟ";
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   text.textContent = "";
   if (reducedMotion || !window.requestAnimationFrame) {
